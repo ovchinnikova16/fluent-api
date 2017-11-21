@@ -14,30 +14,44 @@ namespace ObjectPrinting
             return config(ObjectPrinter.For<T>()).PrintToString(obj);
         }
 
-        public static PrintingConfig<TOwner> TrimmedToLength<TOwner>(this PropertyPrintingConfig<TOwner, string> propConfig, int maxLen)
+        public static PrintingConfig<TOwner> CutToLength<TOwner>(this PropertyPrintingConfig<TOwner, string> config, int maxLen)
         {
-            return ((IPropertyPrintingConfig<TOwner, string>)propConfig).ParentConfig;
+            var printingConfig = ((IPropertyPrintingConfig<TOwner, string>)config)
+                        .PrintingConfig;
+            printingConfig.TypeSerializations[typeof(string)] = 
+                s => ((string)s).Substring(0, Math.Min(((string)s).Length, maxLen));
+
+            return printingConfig;
         }
 
         public static PrintingConfig<TOwner> Using<TOwner>(
-            this PropertyPrintingConfig<TOwner, int> propertyPrintingConfig, CultureInfo cultureInfo)
+            this PropertyPrintingConfig<TOwner, int> config, CultureInfo cultureInfo)
         {
-            return ((IPropertyPrintingConfig<TOwner, int>)propertyPrintingConfig)
-                   .ParentConfig;
+            var printingConfig = ((IPropertyPrintingConfig<TOwner, int>)config)
+                        .PrintingConfig;
+            printingConfig.TypeSerializations[typeof(int)] = o => ((int)o).ToString(cultureInfo);
+
+            return printingConfig;
         }
 
         public static PrintingConfig<TOwner> Using<TOwner>(
-    this PropertyPrintingConfig<TOwner, double> propertyPrintingConfig, CultureInfo cultureInfo)
+    this PropertyPrintingConfig<TOwner, double> config, CultureInfo cultureInfo)
         {
-            return ((IPropertyPrintingConfig<TOwner, double>)propertyPrintingConfig)
-                   .ParentConfig;
+            var printingConfig = ((IPropertyPrintingConfig<TOwner, double>)config)
+                                    .PrintingConfig;
+            printingConfig.TypeSerializations[typeof(double)] = o => ((double)o).ToString(cultureInfo);
+
+            return printingConfig;
         }
 
         public static PrintingConfig<TOwner> Using<TOwner>(
-            this PropertyPrintingConfig<TOwner, float> propertyPrintingConfig, CultureInfo cultureInfo)
+            this PropertyPrintingConfig<TOwner, float> config, CultureInfo cultureInfo)
         {
-            return ((IPropertyPrintingConfig<TOwner, float>)propertyPrintingConfig)
-                   .ParentConfig;
+            var printingConfig = ((IPropertyPrintingConfig<TOwner, float>)config)
+                                    .PrintingConfig;
+            printingConfig.TypeSerializations[typeof(float)] = o => ((float)o).ToString(cultureInfo);
+
+            return printingConfig;
         }
     }
 }

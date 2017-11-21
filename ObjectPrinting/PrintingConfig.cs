@@ -9,19 +9,29 @@ namespace ObjectPrinting
     public class PrintingConfig<TOwner>
     {
         private HashSet<Type> ExcludedTypes = new HashSet<Type>();
+        private HashSet<string> ExcludedProps = new HashSet<string>();
+        public Dictionary<Type, Func<object, string>> TypeSerializations 
+            = new Dictionary<Type, Func<object, string>>();
+        public Dictionary<string, Func<object, string>> PropSerializations 
+            = new Dictionary<string, Func<object, string>>();
+        public string Property;
 
         public PropertyPrintingConfig<TOwner, TPropType> Printing<TPropType>()
         {
+            TypeSerializations[typeof(TPropType)] = null;
             return new PropertyPrintingConfig<TOwner, TPropType>(this);
         }
 
         public PropertyPrintingConfig<TOwner, TPropType> Printing<TPropType>(Expression<Func<TOwner, TPropType>> memberSelector)
         {
+            Property = ((MemberExpression) memberSelector.Body).Member.Name;
+            PropSerializations[Property] = null;
             return new PropertyPrintingConfig<TOwner, TPropType>(this);
         }
 
         public PrintingConfig<TOwner> Excluding<TPropType>(Expression<Func<TOwner, TPropType>> memberSelector)
         {
+            ExcludedProps.Add(((MemberExpression)memberSelector.Body).Member.Name);
             return this;
         }
 
@@ -38,7 +48,6 @@ namespace ObjectPrinting
 
         private string PrintToString(object obj, int nestingLevel)
         {
-            //TODO apply configurations
             if (obj == null)
                 return "null" + Environment.NewLine;
 
@@ -56,7 +65,18 @@ namespace ObjectPrinting
             sb.AppendLine(type.Name);
             foreach (var propertyInfo in type.GetProperties())
             {
-                if (!ExcludedTypes.Contains(propertyInfo.PropertyType))
+                if (TypeSerializations.ContainsKey(propertyInfo.PropertyType))
+                    sb.Append(identation + propertyInfo.Name + " = "
+                        + TypeSerializations[propertyInfo.PropertyType](propertyInfo.GetValue(obj))
+                        + Environment.NewLine);
+
+                else if (PropSerializations.ContainsKey(propertyInfo.Name))
+                    sb.Append(identation + propertyInfo.Name + " = "
+                        + PropSerializations[propertyInfo.Name](propertyInfo.GetValue(obj))
+                        + Environment.NewLine);
+
+                else if (!ExcludedTypes.Contains(propertyInfo.PropertyType) 
+                            && !ExcludedProps.Contains(propertyInfo.Name))
                 {
                     sb.Append(identation + propertyInfo.Name + " = " +
                                 PrintToString(propertyInfo.GetValue(obj),
