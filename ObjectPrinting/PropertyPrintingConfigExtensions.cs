@@ -15,8 +15,9 @@ namespace ObjectPrinting
         {
             var printingConfig = ((IPropertyPrintingConfig<TOwner, string>)config)
                         .PrintingConfig;
-            printingConfig.TypeSerializations[typeof(string)] = 
-                s => ((string)s).Substring(0, Math.Min(((string)s).Length, maxLen));
+
+            printingConfig = PrintingConfig<TOwner>.SetTypeSerializations(
+                printingConfig, typeof(string), s => ((string)s).Substring(0, Math.Min(((string)s).Length, maxLen)));
 
             return printingConfig;
         }
@@ -26,8 +27,8 @@ namespace ObjectPrinting
         {
             var printingConfig = ((IPropertyPrintingConfig<TOwner, int>)config)
                         .PrintingConfig;
-            printingConfig.TypeSerializations[typeof(int)] = o => ((int)o).ToString(cultureInfo);
-
+            printingConfig = PrintingConfig<TOwner>.SetTypeSerializations(
+                printingConfig, typeof(double), o => ((int)o).ToString(cultureInfo));
             return printingConfig;
         }
 
@@ -36,7 +37,8 @@ namespace ObjectPrinting
         {
             var printingConfig = ((IPropertyPrintingConfig<TOwner, double>)config)
                                     .PrintingConfig;
-            printingConfig.TypeSerializations[typeof(double)] = o => ((double)o).ToString(cultureInfo);
+            printingConfig = PrintingConfig<TOwner>.SetTypeSerializations(
+                printingConfig, typeof(double), o => ((double)o).ToString(cultureInfo));
 
             return printingConfig;
         }
@@ -46,7 +48,8 @@ namespace ObjectPrinting
         {
             var printingConfig = ((IPropertyPrintingConfig<TOwner, float>)config)
                                     .PrintingConfig;
-            printingConfig.TypeSerializations[typeof(float)] = o => ((float)o).ToString(cultureInfo);
+            printingConfig = PrintingConfig<TOwner>.SetTypeSerializations(
+                printingConfig, typeof(double), o => ((float)o).ToString(cultureInfo));
 
             return printingConfig;
         }

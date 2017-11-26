@@ -28,10 +28,10 @@ namespace ObjectPrinting.Tests
                 //6. Исключить из сериализации конкретного свойства
                 .Excluding(p => p.Age);
 
-            string s1 = printer.PrintToString(person);
+            //string s1 = printer.PrintToString(person);
 
             //7. Синтаксический сахар в виде метода расширения, сериализующего по-умолчанию
-            string s2 = person.PrintToString();
+            //string s2 = person.PrintToString();
 
             //8. ...с конфигурированием
             string s3 = person.PrintToString(s => s.Excluding(p => p.Age));
