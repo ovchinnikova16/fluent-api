@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NUnit.Framework.Internal;
 
 
 namespace ObjectPrinting
@@ -11,20 +7,23 @@ namespace ObjectPrinting
     public class PropertyPrintingConfig<TOwner, TPropType> : IPropertyPrintingConfig<TOwner, TPropType>
     {
         private readonly PrintingConfig<TOwner> printingConfig;
-
+        private string propertyName;
         public PropertyPrintingConfig(PrintingConfig<TOwner> printingConfig)
         {
             this.printingConfig = printingConfig;
         }
 
+        public PropertyPrintingConfig(PrintingConfig<TOwner> printingConfig, string property)
+        {
+            this.printingConfig = printingConfig;
+            propertyName = property;
+        }
         public PrintingConfig<TOwner> Using(Func<TPropType, string> print)
         {
-            if (printingConfig.TypeSerializations.ContainsKey(typeof(TPropType)) 
-                && printingConfig.TypeSerializations[typeof(TPropType)] == null)
-                printingConfig.TypeSerializations[typeof(TPropType)] = o => print((TPropType)o);
+            if (propertyName == null) 
+                PrintingConfig<TOwner>.SetTypeSerializations(printingConfig, typeof(TPropType), o => print((TPropType)o));
 
-            else if (printingConfig.PropSerializations.ContainsKey(printingConfig.Property))
-                printingConfig.PropSerializations[printingConfig.Property] = o => print((TPropType)o);
+            else PrintingConfig<TOwner>.SetPropSerializations(printingConfig, propertyName, o => print((TPropType)o));
 
             return printingConfig;
         }

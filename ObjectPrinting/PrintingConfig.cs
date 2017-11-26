@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -8,37 +9,50 @@ namespace ObjectPrinting
 {
     public class PrintingConfig<TOwner>
     {
-        private HashSet<Type> ExcludedTypes = new HashSet<Type>();
-        private HashSet<string> ExcludedProps = new HashSet<string>();
-        public Dictionary<Type, Func<object, string>> TypeSerializations 
+        private readonly HashSet<Type> excludedTypes = new HashSet<Type>();
+        private readonly HashSet<string> excludedProps = new HashSet<string>();
+        private Dictionary<Type, Func<object, string>> TypeSerializations 
             = new Dictionary<Type, Func<object, string>>();
-        public Dictionary<string, Func<object, string>> PropSerializations 
+        private Dictionary<string, Func<object, string>> PropSerializations 
             = new Dictionary<string, Func<object, string>>();
-        public string Property;
+
 
         public PropertyPrintingConfig<TOwner, TPropType> Printing<TPropType>()
         {
-            TypeSerializations[typeof(TPropType)] = null;
             return new PropertyPrintingConfig<TOwner, TPropType>(this);
+        }
+
+        public static void SetTypeSerializations(PrintingConfig<TOwner> printingConfig, Type type, Func<object, string> func)
+        {
+            printingConfig.TypeSerializations[type] = func;
+        }
+
+        public static void SetPropSerializations(PrintingConfig<TOwner> printingConfig, string name, Func<object, string> func)
+        {
+            printingConfig.PropSerializations[name] = func;
         }
 
         public PropertyPrintingConfig<TOwner, TPropType> Printing<TPropType>(Expression<Func<TOwner, TPropType>> memberSelector)
         {
-            Property = ((MemberExpression) memberSelector.Body).Member.Name;
-            PropSerializations[Property] = null;
-            return new PropertyPrintingConfig<TOwner, TPropType>(this);
+            var property = ((MemberExpression) memberSelector.Body).Member.Name;
+            return new PropertyPrintingConfig<TOwner, TPropType>(this, property);
         }
 
         public PrintingConfig<TOwner> Excluding<TPropType>(Expression<Func<TOwner, TPropType>> memberSelector)
         {
-            ExcludedProps.Add(((MemberExpression)memberSelector.Body).Member.Name);
+            excludedProps.Add(((MemberExpression)memberSelector.Body).Member.Name);
             return this;
         }
 
         internal PrintingConfig<TOwner> Excluding<TPropType>()
         {
-            ExcludedTypes.Add(typeof(TPropType));
+            excludedTypes.Add(typeof(TPropType));
             return this;
+        }
+
+        internal static void CulturesDictAdd(PrintingConfig<TOwner> printingConfig, Type type, CultureInfo cultureInfo)
+        {
+            printingConfig.Cultures.Add(type, cultureInfo);
         }
 
         public string PrintToString(TOwner obj)
@@ -75,8 +89,8 @@ namespace ObjectPrinting
                         + PropSerializations[propertyInfo.Name](propertyInfo.GetValue(obj))
                         + Environment.NewLine);
 
-                else if (!ExcludedTypes.Contains(propertyInfo.PropertyType) 
-                            && !ExcludedProps.Contains(propertyInfo.Name))
+                else if (!excludedTypes.Contains(propertyInfo.PropertyType) 
+                            && !excludedProps.Contains(propertyInfo.Name))
                 {
                     sb.Append(identation + propertyInfo.Name + " = " +
                                 PrintToString(propertyInfo.GetValue(obj),

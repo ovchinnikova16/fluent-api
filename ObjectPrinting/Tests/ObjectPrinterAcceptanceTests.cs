@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace ObjectPrinting.Tests
 {
-	[TestFixture]
-	public class ObjectPrinterAcceptanceTests
-	{
-		[Test]
-		public void Demo()
-		{
-			var person = new Person { Name = "Alex", Age = 19 };
+    [TestFixture]
+    public class ObjectPrinterAcceptanceTests
+    {
+        [Test]
+        public void Demo()
+        {
+            var person = new Person { Name = "Alex", Age = 19 };
 
-		    var printer = ObjectPrinter.For<Person>()
+            var printer = ObjectPrinter.For<Person>()
                 //1. Исключить из сериализации свойства определенного типа
                 .Excluding<Guid>()
                 //2. Указать альтернативный способ сериализации для определенного типа
@@ -36,27 +37,31 @@ namespace ObjectPrinting.Tests
             string s3 = person.PrintToString(s => s.Excluding(p => p.Age));
         }
 
-	    [Test]
-	    public void ExcludeType()
-	    {
+        [Test]
+        public void ExcludeType()
+        {
             var person = new Person { Name = "Alex", Age = 19 };
 
-	        var printer = ObjectPrinter.For<Person>()
+            var printer = ObjectPrinter.For<Person>()
                 .Excluding<Guid>()
-	            .Excluding<string>()
-	            .PrintToString(person);
-	        printer.Should().Be("Person\r\n\tHeight = 0\r\n\tAge = 19\r\n");
-	    }
+                .Excluding<string>()
+                .PrintToString(person);
+            printer.Should().Be(string.Join(Environment.NewLine, 
+                "Person", "\tHeight = 0", "\tAge = 19") 
+                + Environment.NewLine);
+        }
 
         [Test]
         public void SetSerializationForType()
         {
-            var person = new Person { Name = "Alex", Age = 19, Height = 180};
+            var person = new Person { Name = "Alex", Age = 19, Height = 180 };
 
             var printer = ObjectPrinter.For<Person>()
                 .Printing<double>().Using(i => i + "sm")
                 .PrintToString(person);
-            printer.Should().Be("Person\r\n\tId = Guid\r\n\tName = Alex\r\n\tHeight = 180sm\r\n\tAge = 19\r\n");
+            printer.Should().Be(string.Join(Environment.NewLine, 
+                "Person", "\tId = Guid", "\tName = Alex", "\tHeight = 180sm", "\tAge = 19") 
+                + Environment.NewLine);
         }
         [Test]
         public void SetCultureForNumericalType()
@@ -68,7 +73,9 @@ namespace ObjectPrinting.Tests
                 .Excluding<int>()
                 .Printing<double>().Using(CultureInfo.CurrentCulture)
                 .PrintToString(person);
-            printer.Should().Be("Person\r\n\tName = Alex\r\n\tHeight = 180\r\n");
+            printer.Should().Be(string.Join(Environment.NewLine, 
+                "Person", "\tName = Alex", "\tHeight = 180") 
+                + Environment.NewLine);
         }
 
         [Test]
@@ -80,7 +87,9 @@ namespace ObjectPrinting.Tests
                 .Excluding<Guid>()
                 .Printing(p => p.Age).Using(age => "None")
                 .PrintToString(person);
-            printer.Should().Be("Person\r\n\tName = Alex\r\n\tHeight = 180\r\n\tAge = None\r\n");
+            printer.Should().Be(string.Join(Environment.NewLine, 
+                "Person", "\tName = Alex", "\tHeight = 180", "\tAge = None") 
+                + Environment.NewLine);
         }
 
         [Test]
@@ -93,7 +102,9 @@ namespace ObjectPrinting.Tests
                 .Printing(p => p.Name).CutToLength(1)
                 .PrintToString(person);
 
-            printer.Should().Be("Person\r\n\tName = A\r\n\tHeight = 180\r\n\tAge = 19\r\n");
+            printer.Should().Be(string.Join(Environment.NewLine, 
+                "Person", "\tName = A", "\tHeight = 180", "\tAge = 19") 
+                + Environment.NewLine);
         }
 
         [Test]
@@ -105,7 +116,9 @@ namespace ObjectPrinting.Tests
                 .Excluding(p => p.Age)
                 .Excluding(p => p.Id)
                 .PrintToString(person);
-            printer.Should().Be("Person\r\n\tName = Alex\r\n\tHeight = 0\r\n");
+            printer.Should().Be(string.Join(Environment.NewLine,
+                "Person", "\tName = Alex", "\tHeight = 0")
+                + Environment.NewLine);
         }
     }
 }
