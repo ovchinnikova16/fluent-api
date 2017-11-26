@@ -54,19 +54,19 @@ namespace ObjectPrinting.Tests
         [Test]
         public void SetSerializationForType()
         {
-            var person = new Person { Name = "Alex", Age = 19, Height = 180 };
+            var person = new Person { Name = "Alex", Surname = "Brown", Age = 19, Height = 180 };
 
             var printer = ObjectPrinter.For<Person>()
                 .Printing<double>().Using(i => i + "sm")
                 .PrintToString(person);
             printer.Should().Be(string.Join(Environment.NewLine, 
-                "Person", "\tId = Guid", "\tName = Alex", "\tHeight = 180sm", "\tAge = 19") 
+                "Person", "\tId = Guid", "\tName = Alex", "\tSurname = Brown", "\tHeight = 180sm", "\tAge = 19") 
                 + Environment.NewLine);
         }
         [Test]
         public void SetCultureForNumericalType()
         {
-            var person = new Person { Name = "Alex", Age = 19, Height = 180 };
+            var person = new Person { Name = "Alex", Surname = "Brown", Age = 19, Height = 180 };
 
             var printer = ObjectPrinter.For<Person>()
                 .Excluding<Guid>()
@@ -74,28 +74,28 @@ namespace ObjectPrinting.Tests
                 .Printing<double>().Using(CultureInfo.CurrentCulture)
                 .PrintToString(person);
             printer.Should().Be(string.Join(Environment.NewLine, 
-                "Person", "\tName = Alex", "\tHeight = 180") 
+                "Person", "\tName = Alex", "\tSurname = Brown", "\tHeight = 180") 
                 + Environment.NewLine);
         }
 
         [Test]
         public void SetSerializationForProperty()
         {
-            var person = new Person { Name = "Alex", Age = 19, Height = 180 };
+            var person = new Person { Name = "Alex", Surname = "Brown",Age = 19, Height = 180 };
 
             var printer = ObjectPrinter.For<Person>()
                 .Excluding<Guid>()
                 .Printing(p => p.Age).Using(age => "None")
                 .PrintToString(person);
             printer.Should().Be(string.Join(Environment.NewLine, 
-                "Person", "\tName = Alex", "\tHeight = 180", "\tAge = None") 
+                "Person", "\tName = Alex", "\tSurname = Brown", "\tHeight = 180", "\tAge = None") 
                 + Environment.NewLine);
         }
 
         [Test]
         public void CutStringToLength()
         {
-            var person = new Person { Name = "Alex", Age = 19, Height = 180 };
+            var person = new Person { Name = "Alex", Surname = "Brown", Age = 19, Height = 180};
 
             var printer = ObjectPrinter.For<Person>()
                 .Excluding<Guid>()
@@ -103,21 +103,21 @@ namespace ObjectPrinting.Tests
                 .PrintToString(person);
 
             printer.Should().Be(string.Join(Environment.NewLine, 
-                "Person", "\tName = A", "\tHeight = 180", "\tAge = 19") 
+                "Person", "\tName = A", "\tSurname = Brown", "\tHeight = 180", "\tAge = 19") 
                 + Environment.NewLine);
         }
 
         [Test]
         public void ExcludeProperty()
         {
-            var person = new Person { Name = "Alex", Age = 19 };
+            var person = new Person { Name = "Alex", Age = 19, Surname = "Brown" };
 
             var printer = ObjectPrinter.For<Person>()
                 .Excluding(p => p.Age)
                 .Excluding(p => p.Id)
                 .PrintToString(person);
             printer.Should().Be(string.Join(Environment.NewLine,
-                "Person", "\tName = Alex", "\tHeight = 0")
+                "Person", "\tName = Alex", "\tSurname = Brown", "\tHeight = 0")
                 + Environment.NewLine);
         }
     }

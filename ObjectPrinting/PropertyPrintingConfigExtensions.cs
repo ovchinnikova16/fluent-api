@@ -16,8 +16,8 @@ namespace ObjectPrinting
             var printingConfig = ((IPropertyPrintingConfig<TOwner, string>)config)
                         .PrintingConfig;
 
-            printingConfig = PrintingConfig<TOwner>.SetTypeSerializations(
-                printingConfig, typeof(string), s => ((string)s).Substring(0, Math.Min(((string)s).Length, maxLen)));
+            printingConfig = PrintingConfig<TOwner>.SetPropSerializations(
+                printingConfig, config.PropertyName, s => ((string)s).Substring(0, Math.Min(((string)s).Length, maxLen)));
 
             return printingConfig;
         }
