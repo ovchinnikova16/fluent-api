@@ -22,14 +22,17 @@ namespace ObjectPrinting
             return new PropertyPrintingConfig<TOwner, TPropType>(this);
         }
 
-        public static void SetTypeSerializations(PrintingConfig<TOwner> printingConfig, Type type, Func<object, string> function)
+        public static PrintingConfig<TOwner> SetTypeSerializations(
+            PrintingConfig<TOwner> printingConfig, Type type, Func<object, string> function)
         {
             printingConfig.typeSerializations[type] = function;
+            return printingConfig;
         }
 
-        public static void SetPropSerializations(PrintingConfig<TOwner> printingConfig, string name, Func<object, string> function)
+        public static PrintingConfig<TOwner> SetPropSerializations(PrintingConfig<TOwner> printingConfig, string name, Func<object, string> function)
         {
             printingConfig.propSerializations[name] = function;
+            return printingConfig;
         }
 
         public PropertyPrintingConfig<TOwner, TPropType> Printing<TPropType>(Expression<Func<TOwner, TPropType>> memberSelector)
