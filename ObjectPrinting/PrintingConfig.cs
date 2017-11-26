@@ -11,9 +11,9 @@ namespace ObjectPrinting
     {
         private readonly HashSet<Type> excludedTypes = new HashSet<Type>();
         private readonly HashSet<string> excludedProps = new HashSet<string>();
-        private Dictionary<Type, Func<object, string>> TypeSerializations 
+        private readonly Dictionary<Type, Func<object, string>> typeSerializations 
             = new Dictionary<Type, Func<object, string>>();
-        private Dictionary<string, Func<object, string>> PropSerializations 
+        private readonly Dictionary<string, Func<object, string>> propSerializations 
             = new Dictionary<string, Func<object, string>>();
 
 
@@ -22,14 +22,14 @@ namespace ObjectPrinting
             return new PropertyPrintingConfig<TOwner, TPropType>(this);
         }
 
-        public static void SetTypeSerializations(PrintingConfig<TOwner> printingConfig, Type type, Func<object, string> func)
+        public static void SetTypeSerializations(PrintingConfig<TOwner> printingConfig, Type type, Func<object, string> function)
         {
-            printingConfig.TypeSerializations[type] = func;
+            printingConfig.typeSerializations[type] = function;
         }
 
-        public static void SetPropSerializations(PrintingConfig<TOwner> printingConfig, string name, Func<object, string> func)
+        public static void SetPropSerializations(PrintingConfig<TOwner> printingConfig, string name, Func<object, string> function)
         {
-            printingConfig.PropSerializations[name] = func;
+            printingConfig.propSerializations[name] = function;
         }
 
         public PropertyPrintingConfig<TOwner, TPropType> Printing<TPropType>(Expression<Func<TOwner, TPropType>> memberSelector)
@@ -74,14 +74,14 @@ namespace ObjectPrinting
             sb.AppendLine(type.Name);
             foreach (var propertyInfo in type.GetProperties())
             {
-                if (TypeSerializations.ContainsKey(propertyInfo.PropertyType))
+                if (typeSerializations.ContainsKey(propertyInfo.PropertyType))
                     sb.Append(identation + propertyInfo.Name + " = "
-                        + TypeSerializations[propertyInfo.PropertyType](propertyInfo.GetValue(obj))
+                        + typeSerializations[propertyInfo.PropertyType](propertyInfo.GetValue(obj))
                         + Environment.NewLine);
 
-                else if (PropSerializations.ContainsKey(propertyInfo.Name))
+                else if (propSerializations.ContainsKey(propertyInfo.Name))
                     sb.Append(identation + propertyInfo.Name + " = "
-                        + PropSerializations[propertyInfo.Name](propertyInfo.GetValue(obj))
+                        + propSerializations[propertyInfo.Name](propertyInfo.GetValue(obj))
                         + Environment.NewLine);
 
                 else if (!excludedTypes.Contains(propertyInfo.PropertyType) 

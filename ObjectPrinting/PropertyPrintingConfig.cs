@@ -7,7 +7,7 @@ namespace ObjectPrinting
     public class PropertyPrintingConfig<TOwner, TPropType> : IPropertyPrintingConfig<TOwner, TPropType>
     {
         private readonly PrintingConfig<TOwner> printingConfig;
-        private string propertyName;
+        private readonly string propertyName;
 
         public PropertyPrintingConfig(PrintingConfig<TOwner> printingConfig, string property = null)
         {
