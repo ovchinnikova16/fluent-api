@@ -8,12 +8,8 @@ namespace ObjectPrinting
     {
         private readonly PrintingConfig<TOwner> printingConfig;
         private string propertyName;
-        public PropertyPrintingConfig(PrintingConfig<TOwner> printingConfig)
-        {
-            this.printingConfig = printingConfig;
-        }
 
-        public PropertyPrintingConfig(PrintingConfig<TOwner> printingConfig, string property)
+        public PropertyPrintingConfig(PrintingConfig<TOwner> printingConfig, string property = null)
         {
             this.printingConfig = printingConfig;
             propertyName = property;

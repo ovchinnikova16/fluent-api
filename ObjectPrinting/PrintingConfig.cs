@@ -50,11 +50,6 @@ namespace ObjectPrinting
             return this;
         }
 
-        internal static void CulturesDictAdd(PrintingConfig<TOwner> printingConfig, Type type, CultureInfo cultureInfo)
-        {
-            printingConfig.Cultures.Add(type, cultureInfo);
-        }
-
         public string PrintToString(TOwner obj)
         {
             return PrintToString(obj, 0);
