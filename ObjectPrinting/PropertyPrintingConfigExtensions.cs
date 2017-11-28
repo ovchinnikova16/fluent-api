@@ -6,12 +6,14 @@ namespace ObjectPrinting
 {
     public static class PropertyPrintingConfigExtensions
     {
-        public static string PrintToString<T>(this T obj, Func<PrintingConfig<T>, PrintingConfig<T>> config)
+        public static string PrintToString<T>(
+            this T obj, Func<PrintingConfig<T>, PrintingConfig<T>> config)
         {
             return config(ObjectPrinter.For<T>()).PrintToString(obj);
         }
 
-        public static PrintingConfig<TOwner> CutToLength<TOwner>(this PropertyPrintingConfig<TOwner, string> config, int maxLen)
+        public static PrintingConfig<TOwner> CutToLength<TOwner>(
+            this PropertyPrintingConfig<TOwner, string> config, int maxLen)
         {
             var printingConfig = ((IPropertyPrintingConfig<TOwner, string>)config)
                         .PrintingConfig;
@@ -33,7 +35,7 @@ namespace ObjectPrinting
         }
 
         public static PrintingConfig<TOwner> Using<TOwner>(
-    this PropertyPrintingConfig<TOwner, double> config, CultureInfo cultureInfo)
+            this PropertyPrintingConfig<TOwner, double> config, CultureInfo cultureInfo)
         {
             var printingConfig = ((IPropertyPrintingConfig<TOwner, double>)config)
                                     .PrintingConfig;

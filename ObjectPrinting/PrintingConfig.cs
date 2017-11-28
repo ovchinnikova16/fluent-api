@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -90,8 +89,8 @@ namespace ObjectPrinting
                 else if (!excludedTypes.Contains(propertyInfo.PropertyType) 
                             && !excludedProps.Contains(propertyInfo.Name))
                 {
-                    sb.Append(identation + propertyInfo.Name + " = " +
-                                PrintToString(propertyInfo.GetValue(obj),
+                    sb.Append(identation + propertyInfo.Name + " = " 
+                        + PrintToString(propertyInfo.GetValue(obj),
                                 nestingLevel + 1));
                 }
             }
